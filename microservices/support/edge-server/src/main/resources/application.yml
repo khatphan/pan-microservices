@@ -1,0 +1,27 @@
+#spring:
+#  application:
+#    name: edgeserver
+#  cloud:
+#    bus:
+#      enabled: false
+#      refresh:
+#        enabled: false
+#server:
+#  port: 8765
+#
+##eureka:
+##  instance:
+##    hostname: localhost
+##  client:
+##    serviceUrl:
+##      defaultZone: http://${eureka.instance.hostname}:8761/eureka/
+#ribbon:
+#  eureka:
+#    enabled: false
+#
+#zuul:
+#  routes:
+#    service-consumer:
+#      path: /cons/**
+#      url: "http://localhost:8080/"
+#

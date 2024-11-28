@@ -1,0 +1,21 @@
+spring:
+  security.oauth2.authorizationserver:
+    issuer: 'http://auth-server:9000'
+    client:
+      apiProd-client:
+        registration:
+          client-id: apiProd-client
+          client-secret: '{noop}secret'
+          client-name: Product Client
+          client-authentication-methods:
+            - client_secret_basic
+          authorization-grant-types:
+            - authorization_code
+            - refresh_token
+          redirect-uris:
+            - 'http://localhost:8080/login/oauth2/code/apiProd-client-oidc'
+            - 'http://localhost:8080/authorized'
+          scopes:
+            - openid
+            - prod.read
+#            - pro.passed

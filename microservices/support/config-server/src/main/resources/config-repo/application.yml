@@ -1,0 +1,16 @@
+##spring:
+##  profiles:
+##    active:
+##    - prod
+#
+
+#spring:
+#  application:
+#    name: product-service
+
+#eureka:
+#  instance:
+#    hostname: localhost
+#
+#user.role: User
+#

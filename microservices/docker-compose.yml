@@ -1,0 +1,229 @@
+name: pan
+services:
+
+  # EUREKA-SERVER
+  eureka-server:
+    image: eureka-server
+    container_name: discovery-server
+    build:
+      context: ./support/discovery-server
+    #      dockerfile: ./support/eurekaserver.Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+#      test: curl -f http://localhost:8761/actuator/health || exit 1
+#      interval: 10s
+#      timeout: 15s
+#      retries: 3
+#      start_period: 15s
+
+  # AUTH-SERVER
+  auth-server:
+    image: auth-server
+    container_name: auth
+    build:
+      context: ./support/auth-server
+    ports:
+      - "9090:9090"
+    networks:
+      - microservices-net
+
+  # RABBITMQ
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"  # RabbitMQ Management UI (optional, for debugging)
+      - "5672:5672"    # RabbitMQ default AMQP port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - microservices-net
+
+  # CONFIG-SERVER
+  config-server:
+    image: config-server
+    container_name: configserver
+    build:
+      context: ./support/config-server
+#      dockerfile: ./support/config-server/Dockerfile
+#    hostname: localhost
+    ports:
+      - "8888:8888"
+#    links:
+#      - "discovery-server"
+#      - "rabbitmq"
+#      - "rabbitmq:management"
+#    depends_on:
+#      eureka-server:
+#        condition: service_started
+#      rabbitmq:
+#        condition: service_started
+    depends_on:
+      - eureka-server
+      - rabbitmq
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=native # Use native profile for local config files
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:/config-data/
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_SECURITY_USER_NAME=root
+      - SPRING_SECURITY_USER_PASSWORD=123
+      - SPRING_CLOUD_CONFIG_USERNAME=root
+      - SPRING_CLOUD_CONFIG_PASSWORD=123
+    volumes:
+      - ./support/config-server/src/main/resources/config-repo:/config-data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+#      test: curl -f http://localhost:8888/actuator/health || exit 1
+#      interval: 10s
+#      timeout: 15s
+#      retries: 3
+#      start_period: 15s
+
+  # PRODUCT-SERVICE
+  product-service:
+    image: product
+    container_name: product-service
+    build:
+      context: ./core/product
+      dockerfile: Dockerfile
+    ports:
+#      - ":8080" # Random port on host mapped to 8080 in container
+#      - "8080" # Map to a random host port
+      - "8081:8081" # Map to a random host port
+#    links:
+#      - eureka-server
+#      - config-server
+#      - rabbitmq
+    depends_on:
+      - config-server
+      - eureka-server
+      - rabbitmq
+#    depends_on:
+#      config-server:
+#        condition: service_completed_successfully
+#      eureka-server:
+#        condition: service_completed_successfully
+#      rabbitmq:
+#        condition: service_started
+#      - rabbitmq
+#          condition: service_healthy # No health condition here; assumes RabbitMQ starts quickly enough
+    command: ["java -jar product.jar"]
+    entrypoint: ["sh", "-c", "sleep 30 && java -jar product.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=product-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+#      - SPRING_CONFIG_IMPORT=configserver
+#      - SPRING_CONFIG_IMPORT=optional:configserver
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+#      - SPRING_CONFIG_IMPORT=optional:configserver:http://root:123@config-server:8888
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_SECURITY_USER_NAME=root
+      - SPRING_SECURITY_USER_PASSWORD=123
+      - SPRING_CLOUD_CONFIG_USERNAME=root
+      - SPRING_CLOUD_CONFIG_PASSWORD=123
+    networks:
+      - microservices-net
+#    network_mode: host
+    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:????/actuator/health"]
+      test: ["CMD-SHELL", "echo 'healthy'"]
+      #      test: curl -f http://localhost:8888/actuator/health || exit 1
+#      interval: 10s
+#      timeout: 15s
+#      retries: 3
+      start_period: 30s
+
+  # REVIEW-SERVICE
+  review-service:
+    image: review
+    container_name: review-service
+    build:
+      context: ./core/review
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - config-server
+      - eureka-server
+      - rabbitmq
+    command: ["java -jar review.jar"]
+    entrypoint: ["sh", "-c", "sleep 30 && java -jar review.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=review-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+#      - SPRING_CONFIG_IMPORT=configserver
+#      - SPRING_CONFIG_IMPORT=optional:configserver
+#      - SPRING_CONFIG_IMPORT=optional:configserver:http://root:123@config-server:8888
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_SECURITY_USER_NAME=root
+      - SPRING_SECURITY_USER_PASSWORD=123
+      - SPRING_CLOUD_CONFIG_USERNAME=root
+      - SPRING_CLOUD_CONFIG_PASSWORD=123
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'healthy'"]
+      start_period: 30s
+
+
+#  productcomposite-service:
+#    image: product-composite
+#    build:
+#      context: composite/product-composite
+##    ports:
+##      - "8083:8083"
+##    depends_on:
+##      - discovery-server
+#    links:
+#      - "discovery-server"
+#      - "config-server"
+##    environment:
+##      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+##      EMPLOYEE_SERVICE_URL: http://employee-service:8081
+#    networks:
+#      - microservices-net
+#
+#  resource-server:
+#    image: resource-server
+#    build:
+#      context: api/resource-server
+#    ports:
+#      - "8090:8090"
+##    depends_on:
+##      - discovery-server
+#    links:
+#      - "discovery-server"
+#      - "config-server"
+##    environment:
+##      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+#    networks:
+#      - microservices-net
+
+#  consumer-service:
+#    image: service-consumer
+#    build:
+#      context: consumer/service-consumer
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge

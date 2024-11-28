@@ -1,0 +1,32 @@
+#configuration properties for authentication purposes:
+spring:
+  security.oauth2.client:
+    registration:
+      apiProd-client-oidc:
+        provider: spring
+        client-id: apiProd-client
+        client-secret: secret
+        authorization-grant-type: authorization_code
+        redirect-uri: 'http://localhost:8080/login/oauth2/code/{registrationId}'
+        scope: openid
+        client-name: apiProd-client-oidc
+      apiProd-client-authorization-code:
+        provider: spring
+        client-id: apiProd-client
+        client-secret: secret
+        authorization-grant-type: authorization_code
+        redirect-uri: 'http://localhost:8080/authorized'
+#        redirect-uri: "https://oauthdebugger.com/debug"
+        scope: prod.read
+        client-name: apiProd-client-authorization-code
+#      test-client-passed:
+#        provider: spring
+#        client-id: apiProd-client
+#        client-secret: secret
+#        authorization-grant-type: authorization_code
+#        redirect-uri: 'http://localhost:8080/test'
+#        scope: pro.passed
+#        client-name: test-client-passed
+    provider:
+      spring:
+        issuer-uri: 'http://auth-server:9000'
