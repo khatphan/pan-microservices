@@ -1,0 +1,33 @@
+spring:
+#  sleuth:   # To enable tracing of messaging and HTTP
+#    sampler:
+#      probability: 1.0  # Trace all requests
+#    messaging:
+#      enabled: true
+#    propagation:
+#      type: w3c,b3
+#    traceId128: true
+#    supportsJoin: false
+#  zipkin:   # To send traces via RabbitMQ
+#    sender:
+#      type: rabbit
+#  cloud:
+#    stream:
+#      rabbit:
+#        binder:
+#          addresses: localhost:5672
+  rabbitmq:
+    listener:
+      observation:
+        enabled: true # Enables observation/tracing for RabbitMQ
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0 # Trace 100% of requests
+  metrics:
+    export:
+      zipkin:
+        enabled: true
+        base-url: http://localhost:9411/api/v2/spans
+
