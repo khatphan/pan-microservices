@@ -44,6 +44,19 @@ services:
     networks:
       - microservices-net
 
+  # ZIPKIN
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    environment:
+      - RABBIT_ADDRESSES=rabbitmq:5672
+      - RABBIT_USER=guest
+      - RABBIT_PASSWORD=guest
+    depends_on:
+      - rabbitmq
+    ports:
+      - "9411:9411"
+
   # CONFIG-SERVER
   config-server:
     image: config-server
