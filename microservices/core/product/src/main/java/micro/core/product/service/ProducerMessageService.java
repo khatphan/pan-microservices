@@ -1,11 +1,12 @@
 package micro.core.product.service;
 
+import micro.core.product.dto.ProductDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import micro.core.product.model.Product;
+import micro.core.product.entities.Product;
 
 @Service
 public class ProducerMessageService {
@@ -35,7 +36,7 @@ public class ProducerMessageService {
 
     public void sendProductRabbitmq() {
 
-        Product product = productService.getProductById(1);
+        ProductDto product = productService.getProductById(1);
         rabbitTemplate.convertAndSend(exchange, prod_routingKey, product);
 
         System.out.printf("\nMessage has routingKey= %s, and Product= %s", prod_routingKey, product.toString());

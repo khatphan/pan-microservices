@@ -1,11 +1,12 @@
 package micro.core.product.controller;
 
+import micro.core.product.dto.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import micro.core.product.model.Product;
+import micro.core.product.entities.Product;
 import micro.core.product.service.ProductService;
 
 @RestController
@@ -18,7 +19,7 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/product/{prodId}")
-    public ResponseEntity<Product> getProduct(@PathVariable int prodId) {
+    public ResponseEntity<ProductDto> getProduct(@PathVariable int prodId) {
 
         return ResponseEntity.ok(productService.getProductById(prodId));
     }
