@@ -1,13 +1,13 @@
 package micro.core.product.service;
 
+import micro.core.product.dto.ProductDto;
 import org.springframework.stereotype.Service;
 
-import micro.core.product.model.Product;
+public interface ProductService {
 
-@Service
-public class ProductService {
+//    public Product getProductById(int id) {
+//        return new Product(1, "Iphone 16 Promax", 489);
+//    }
 
-    public Product getProductById(int id) {
-        return new Product(1, "Iphone 16 Promax", 489);
-    }
+    ProductDto getProductById(int id);
 }
