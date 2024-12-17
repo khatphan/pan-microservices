@@ -1,9 +1,9 @@
 package micro.core.product.repo;
 
-import micro.core.product.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import micro.core.product.entities.Product;
+
 @Repository
-public interface ProductRepo extends JpaRepository<Product, Integer> {
-}
+public interface ProductRepo extends JpaRepository<Product, Integer> {}

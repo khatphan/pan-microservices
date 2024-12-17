@@ -1,12 +1,11 @@
 package micro.core.product.service;
 
-import micro.core.product.dto.ProductDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import micro.core.product.entities.Product;
+import micro.core.product.dto.ProductDto;
 
 @Service
 public class ProducerMessageService {

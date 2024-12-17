@@ -1,9 +1,9 @@
 package micro.core.product.entities;
 
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -19,6 +19,7 @@ public class Product {
 
     @Column(name = "name")
     private String name;
+
     @Column(name = "weight")
     private int weight;
 }
