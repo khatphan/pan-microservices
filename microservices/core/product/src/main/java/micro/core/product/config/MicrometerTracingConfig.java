@@ -1,10 +1,10 @@
 package micro.core.product.config;
 
-import brave.handler.SpanHandler;
-import brave.Tracing;
-import brave.propagation.ThreadLocalCurrentTraceContext;
-import io.micrometer.tracing.Tracer;
-import org.springframework.context.annotation.Bean;
+// import brave.handler.SpanHandler;
+// import brave.Tracing;
+// import brave.propagation.ThreadLocalCurrentTraceContext;
+// import io.micrometer.tracing.Tracer;
+// import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
