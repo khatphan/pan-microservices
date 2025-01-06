@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS product
 name varchar,
 weight integer,
 PRIMARY KEY (id));
-
---INSERT INTO Product (id, name, weight) VALUES (1, 'Pan', 63);
+--
+--INSERT INTO product (id, name, weight) VALUES (1, 'Pan', 63);
